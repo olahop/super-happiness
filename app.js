@@ -20,12 +20,15 @@ const ICON = {
 };
 
 // ---------- Persistence ----------
+// Keys are namespaced per city (Oslo keeps the original keys) so a demo in
+// one city doesn't show favorites/searches saved while demoing another.
+const STORE_PREFIX = CITY.id === "oslo" ? "tw_" : `tw_${CITY.id}_`;
 const Store = {
-  favorites: JSON.parse(localStorage.getItem("tw_favorites") || "[]"),
-  searches: JSON.parse(localStorage.getItem("tw_searches") || "[]"),
+  favorites: JSON.parse(localStorage.getItem(STORE_PREFIX + "favorites") || "[]"),
+  searches: JSON.parse(localStorage.getItem(STORE_PREFIX + "searches") || "[]"),
   save() {
-    localStorage.setItem("tw_favorites", JSON.stringify(this.favorites));
-    localStorage.setItem("tw_searches", JSON.stringify(this.searches));
+    localStorage.setItem(STORE_PREFIX + "favorites", JSON.stringify(this.favorites));
+    localStorage.setItem(STORE_PREFIX + "searches", JSON.stringify(this.searches));
   },
   isFav(id) { return this.favorites.includes(id); },
   toggleFav(id) {
@@ -102,7 +105,11 @@ function render() {
     if (name === "browse") renderBrowse();
     if (name === "favorites") renderFavorites();
     if (name === "alerts") renderAlerts();
-    if (name === "map") setTimeout(() => window.__leafletMap && window.__leafletMap.invalidateSize(), 50);
+    if (name === "map") setTimeout(() => {
+      if (!window.__leafletMap) return;
+      window.__leafletMap.invalidateSize();
+      fitMapToShopsOnce();
+    }, 50);
   } else if (name === "item") {
     openItemOverlay(param);
   } else if (name === "shop") {
@@ -493,7 +500,12 @@ function openShopOverlay(id) {
 // ---------- Map ----------
 function initMap() {
   document.getElementById("shop-count-text").textContent = SHOPS.length + " butikker";
-  const map = L.map("leaflet-map", { zoomControl: false, attributionControl: false }).setView([59.919, 10.745], 13);
+  document.getElementById("city-name").textContent = CITY.name;
+  if (CITY.id !== "oslo") document.title = `Thrift Window · ${CITY.name}`;
+  const map = L.map("leaflet-map", { zoomControl: false, attributionControl: false, zoomSnap: 0.5 });
+  // Cities without a fixed center/zoom are fitted to their shops — but only
+  // once the map is visible, since fitBounds needs the container's real size.
+  if (CITY.center) map.setView(CITY.center, CITY.zoom);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
   L.control.zoom({ position: "bottomright" }).addTo(map);
   window.__leafletMap = map;
@@ -513,6 +525,13 @@ function initMap() {
   });
 
   renderShopStrip();
+}
+
+let mapFitted = !!CITY.center;
+function fitMapToShopsOnce() {
+  if (mapFitted) return;
+  mapFitted = true;
+  window.__leafletMap.fitBounds(SHOPS.map((s) => [s.lat, s.lng]), { paddingTopLeft: [30, 70], paddingBottomRight: [30, 30] });
 }
 
 let selectedShopId = null;
