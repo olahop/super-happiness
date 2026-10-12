@@ -42,69 +42,152 @@ const GENDERS = [
   { id: "any", label: "Unisex" },
 ];
 
-// Oslo-area shops in the Thrift Window network.
-const SHOPS = [
-  {
-    id: "shop-gronland",
-    name: "Loop Vintage Grønland",
-    address: "Grønlandsleiret 25, 0190 Oslo",
-    lat: 59.9105, lng: 10.7625,
-    hours: "Man–fre 11–18, lør 11–16",
-    phone: "22 17 40 12",
-    description: "Kuratert vintage med fokus på 90-tallsjakker og denim. Kjent for gode utvalg av skinnvarer.",
-    heroColor: "#C1602D",
+// Shops in the Thrift Window network, per demo city. Pick a city with
+// ?city=trondheim (or open /trondheim/); anything else falls back to Oslo.
+const CITIES = {
+  oslo: {
+    id: "oslo",
+    name: "Oslo",
+    center: [59.919, 10.745],
+    zoom: 13,
+    shops: [
+      {
+        id: "shop-gronland",
+        name: "Loop Vintage Grønland",
+        address: "Grønlandsleiret 25, 0190 Oslo",
+        lat: 59.9105, lng: 10.7625,
+        hours: "Man–fre 11–18, lør 11–16",
+        phone: "22 17 40 12",
+        description: "Kuratert vintage med fokus på 90-tallsjakker og denim. Kjent for gode utvalg av skinnvarer.",
+        heroColor: "#C1602D",
+      },
+      {
+        id: "shop-grunerlokka",
+        name: "Bruktbua Grünerløkka",
+        address: "Thorvald Meyers gate 44, 0555 Oslo",
+        lat: 59.9226, lng: 10.7579,
+        hours: "Man–søn 10–19",
+        phone: "22 04 55 61",
+        description: "Løkkas favoritt for secondhand streetwear og norske merker. Nytt inn hver mandag.",
+        heroColor: "#7A9471",
+      },
+      {
+        id: "shop-majorstuen",
+        name: "Encore Majorstuen",
+        address: "Bogstadveien 12, 0355 Oslo",
+        lat: 59.9296, lng: 10.7134,
+        hours: "Man–fre 10–18, lør 10–17",
+        phone: "22 60 12 88",
+        description: "Klassisk og tidløst — dressjakker, kåper og kontorklær i solid kvalitet.",
+        heroColor: "#233258",
+      },
+      {
+        id: "shop-torshov",
+        name: "Sirkel Torshov",
+        address: "Vogts gate 62, 0477 Oslo",
+        lat: 59.9407, lng: 10.7669,
+        hours: "Tir–søn 11–17",
+        phone: "22 71 09 45",
+        description: "Nabolagsbutikk drevet som andelslag. Alt overskudd går til lokale miljøprosjekter.",
+        heroColor: "#C99A2E",
+      },
+      {
+        id: "shop-frogner",
+        name: "Relove Frogner",
+        address: "Bygdøy allé 9, 0257 Oslo",
+        lat: 59.9214, lng: 10.7089,
+        hours: "Man–lør 11–18",
+        phone: "22 55 80 20",
+        description: "Designermerker til bruktpris — Frogners svar på et kuratert bruktvarehus.",
+        heroColor: "#6D2B3A",
+      },
+      {
+        id: "shop-gamlebyen",
+        name: "Ombruk Gamlebyen",
+        address: "Oslo gate 41, 0192 Oslo",
+        lat: 59.9032, lng: 10.7622,
+        hours: "Ons–søn 12–18",
+        phone: "22 68 33 14",
+        description: "Ung og eksperimentell butikk med fokus på ombrukt arbeidstøy og verktøyjakker.",
+        heroColor: "#3C6EA5",
+      },
+    ],
   },
-  {
-    id: "shop-grunerlokka",
-    name: "Bruktbua Grünerløkka",
-    address: "Thorvald Meyers gate 44, 0555 Oslo",
-    lat: 59.9226, lng: 10.7579,
-    hours: "Man–søn 10–19",
-    phone: "22 04 55 61",
-    description: "Løkkas favoritt for secondhand streetwear og norske merker. Nytt inn hver mandag.",
-    heroColor: "#7A9471",
+  trondheim: {
+    id: "trondheim",
+    name: "Trondheim",
+    // No center/zoom: the map fits itself to the shops instead.
+    shops: [
+      {
+        id: "shop-bakklandet",
+        name: "Loop Vintage Bakklandet",
+        address: "Øvre Bakklandet 58, 7013 Trondheim",
+        lat: 63.4287, lng: 10.4045,
+        hours: "Man–fre 11–18, lør 11–16",
+        phone: "73 52 40 12",
+        description: "Kuratert vintage i trehusidyllen på Bakklandet. Kjent for 70-tallskåper, skinnjakker og godt utvalg av denim.",
+        heroColor: "#C1602D",
+      },
+      {
+        id: "shop-solsiden",
+        name: "Bruktbua Solsiden",
+        address: "Beddingen 10, 7042 Trondheim",
+        lat: 63.4345, lng: 10.4117,
+        hours: "Man–søn 10–19",
+        phone: "73 87 55 61",
+        description: "Secondhand streetwear og norske merker ved kanalen på Solsiden. Nytt inn hver mandag.",
+        heroColor: "#7A9471",
+      },
+      {
+        id: "shop-midtbyen",
+        name: "Encore Midtbyen",
+        address: "Nordre gate 11, 7011 Trondheim",
+        lat: 63.4327, lng: 10.3978,
+        hours: "Man–fre 10–18, lør 10–17",
+        phone: "73 60 12 88",
+        description: "Klassisk og tidløst midt i gågata — dressjakker, kåper og kontorklær i solid kvalitet.",
+        heroColor: "#233258",
+      },
+      {
+        id: "shop-mollenberg",
+        name: "Sirkel Møllenberg",
+        address: "Rosenborggata 20, 7014 Trondheim",
+        lat: 63.4318, lng: 10.4150,
+        hours: "Tir–søn 11–17",
+        phone: "73 71 09 45",
+        description: "Nabolagsbutikk drevet som andelslag. Alt overskudd går til lokale miljøprosjekter.",
+        heroColor: "#C99A2E",
+      },
+      {
+        id: "shop-kalvskinnet",
+        name: "Relove Kalvskinnet",
+        address: "Erling Skakkes gate 40, 7012 Trondheim",
+        lat: 63.4290, lng: 10.3885,
+        hours: "Man–lør 11–18",
+        phone: "73 55 80 20",
+        description: "Designermerker til bruktpris — et kuratert bruktvarehus et steinkast fra Nidarosdomen.",
+        heroColor: "#6D2B3A",
+      },
+      {
+        id: "shop-lademoen",
+        name: "Ombruk Lademoen",
+        address: "Innherredsveien 50, 7042 Trondheim",
+        lat: 63.4372, lng: 10.4245,
+        hours: "Ons–søn 12–18",
+        phone: "73 68 33 14",
+        description: "Ung og eksperimentell butikk med fokus på ombrukt arbeidstøy og studentvennlige priser.",
+        heroColor: "#3C6EA5",
+      },
+    ],
   },
-  {
-    id: "shop-majorstuen",
-    name: "Encore Majorstuen",
-    address: "Bogstadveien 12, 0355 Oslo",
-    lat: 59.9296, lng: 10.7134,
-    hours: "Man–fre 10–18, lør 10–17",
-    phone: "22 60 12 88",
-    description: "Klassisk og tidløst — dressjakker, kåper og kontorklær i solid kvalitet.",
-    heroColor: "#233258",
-  },
-  {
-    id: "shop-torshov",
-    name: "Sirkel Torshov",
-    address: "Vogts gate 62, 0477 Oslo",
-    lat: 59.9407, lng: 10.7669,
-    hours: "Tir–søn 11–17",
-    phone: "22 71 09 45",
-    description: "Nabolagsbutikk drevet som andelslag. Alt overskudd går til lokale miljøprosjekter.",
-    heroColor: "#C99A2E",
-  },
-  {
-    id: "shop-frogner",
-    name: "Relove Frogner",
-    address: "Bygdøy allé 9, 0257 Oslo",
-    lat: 59.9214, lng: 10.7089,
-    hours: "Man–lør 11–18",
-    phone: "22 55 80 20",
-    description: "Designermerker til bruktpris — Frogners svar på et kuratert bruktvarehus.",
-    heroColor: "#6D2B3A",
-  },
-  {
-    id: "shop-gamlebyen",
-    name: "Ombruk Gamlebyen",
-    address: "Oslo gate 41, 0192 Oslo",
-    lat: 59.9032, lng: 10.7622,
-    hours: "Ons–søn 12–18",
-    phone: "22 68 33 14",
-    description: "Ung og eksperimentell butikk med fokus på ombrukt arbeidstøy og verktøyjakker.",
-    heroColor: "#3C6EA5",
-  },
-];
+};
+
+const CITY = (() => {
+  const id = (new URLSearchParams(location.search).get("city") || "").toLowerCase();
+  return CITIES[id] || CITIES.oslo;
+})();
+
+const SHOPS = CITY.shops;
 
 const ICONS = {
   jakker: "🧥", gensere: "🧶", bukser: "👖", skjorter: "👕",

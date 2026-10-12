@@ -10,6 +10,15 @@ Open `index.html` directly in a browser (Chrome DevTools' device toolbar,
 or an actual phone on the same network, gives the truest feel — the layout
 is capped at 460px and designed mobile-first).
 
+## Cities
+
+The app defaults to Oslo. For demos elsewhere, add `?city=trondheim` to the
+URL (e.g. `index.html?city=trondheim`), or open `/trondheim/` — a tiny
+redirect page to the same thing, so it works on any static host without
+rewrite rules. Each city has its own map and example shops in `CITIES` in
+`data.js`; the garment catalog is shared and spread across that city's
+shops. Favorites and saved searches are stored separately per city.
+
 ## What's here
 
 - **Kart** — map of the shops in the network (Leaflet + OpenStreetMap tiles,
